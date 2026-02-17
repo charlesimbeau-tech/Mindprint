@@ -1185,12 +1185,42 @@
      ALL INSTRUMENTS IN ORDER
      ============================================================ */
   const INSTRUMENTS = [PHQ9, GAD7, PCL5, MDQ, AUDIT, ASRS, ISI, PHQ15, PSS10, CSSRS, PID5BF, MSIBPD, LPFSBF, AQ10, RAADS14, CATQ, OCIR, LSAS, DESII, IESR, CAPE42, SCOFF, WHO5];
+  /* ============================================================
+     TRIAGE / SCREENING QUESTIONS
+     ============================================================ */
+  const TRIAGE_QUESTIONS = [
+    { text: "Have you been feeling down, depressed, or hopeless?", instruments: ["phq9"] },
+    { text: "Do you often feel nervous, anxious, or on edge?", instruments: ["gad7"] },
+    { text: "Have you experienced or witnessed a traumatic event that still affects you?", instruments: ["pcl5", "iesr"] },
+    { text: "Do you have periods of unusually high energy, decreased need for sleep, or racing thoughts?", instruments: ["mdq"] },
+    { text: "Do you drink alcohol regularly or feel you should cut down?", instruments: ["audit"] },
+    { text: "Do you have trouble focusing, staying organized, or sitting still?", instruments: ["asrs"] },
+    { text: "Do you have difficulty falling asleep, staying asleep, or wake up too early?", instruments: ["isi"] },
+    { text: "Do you frequently experience physical symptoms like headaches, stomach pain, or dizziness?", instruments: ["phq15"] },
+    { text: "Do you feel overwhelmed by stress in your daily life?", instruments: ["pss10"] },
+    { text: "Do you have difficulty understanding social cues or prefer routines and patterns?", instruments: ["aq10", "raads14"] },
+    { text: "Do you feel like you mask or hide your true self in social situations?", instruments: ["catq"] },
+    { text: "Do you have unwanted repetitive thoughts or feel compelled to perform certain rituals?", instruments: ["ocir"] },
+    { text: "Do you feel intense fear or avoidance in social situations?", instruments: ["lsas"] },
+    { text: "Do you sometimes feel detached from yourself, your surroundings, or have gaps in memory?", instruments: ["des2", "desii"] },
+    { text: "Do you have concerns about your eating habits, weight, or body image?", instruments: ["scoff"] },
+    { text: "Do you have patterns of unstable relationships, intense emotions, or fear of abandonment?", instruments: ["msibpd", "lpfsbf", "pid5bf"] },
+  ];
+
+  // These instruments are ALWAYS included regardless of triage answers
+  const ALWAYS_INCLUDE = ["cssrs", "who5"];
+
+  // Active (filtered) instruments list — starts as all, updated after triage
+  var activeInstruments = INSTRUMENTS.slice();
+  var triageAnswers = new Array(TRIAGE_QUESTIONS.length).fill(false);
+  var triageSelectAll = false;
+
 
   /* ============================================================
      STATE
      ============================================================ */
-  var currentStep = 0; // 0 = patient info, 1-10 = instruments, 11 = review
-  var totalSteps = INSTRUMENTS.length + 2; // patient info + instruments + review
+  var currentStep = 0; // 0 = patient info, 1 = triage, 2+ = instruments, last = review
+  var totalSteps = INSTRUMENTS.length + 3; // patient info + triage + instruments + review
   var answers = {}; // keyed by instrument id
   var patientInfo = {};
 
@@ -1202,13 +1232,23 @@
       currentStep = parsed.currentStep || 0;
       answers = parsed.answers || {};
       patientInfo = parsed.patientInfo || {};
+      if (parsed.triageAnswers) triageAnswers = parsed.triageAnswers;
+      if (parsed.triageSelectAll) triageSelectAll = parsed.triageSelectAll;
+      if (parsed.activeInstrumentIds) {
+        activeInstruments = parsed.activeInstrumentIds.map(function(id) {
+          return INSTRUMENTS.find(function(inst) { return inst.id === id; });
+        }).filter(Boolean);
+      }
+      totalSteps = activeInstruments.length + 3;
     }
   } catch (e) { /* ignore */ }
 
   function saveState() {
     try {
       sessionStorage.setItem("mindprint_state", JSON.stringify({
-        currentStep: currentStep, answers: answers, patientInfo: patientInfo
+        currentStep: currentStep, answers: answers, patientInfo: patientInfo,
+        triageAnswers: triageAnswers, triageSelectAll: triageSelectAll,
+        activeInstrumentIds: activeInstruments.map(function(inst) { return inst.id; })
       }));
     } catch (e) { /* ignore */ }
   }
@@ -1224,7 +1264,8 @@
     var pct = Math.round((currentStep / (totalSteps - 1)) * 100);
     progressBar.style.width = pct + "%";
     if (currentStep === 0) stepLabel.textContent = "Patient Information";
-    else if (currentStep <= INSTRUMENTS.length) stepLabel.textContent = INSTRUMENTS[currentStep - 1].name + " \u2014 " + INSTRUMENTS[currentStep - 1].category;
+    else if (currentStep === 1) stepLabel.textContent = "Screening Questions";
+    else if (currentStep <= activeInstruments.length + 1) stepLabel.textContent = activeInstruments[currentStep - 2].name + " \u2014 " + activeInstruments[currentStep - 2].category;
     else stepLabel.textContent = "Review & Generate Report";
   }
 
@@ -1239,7 +1280,8 @@
     updateProgress();
     window.scrollTo(0, 0);
     if (currentStep === 0) renderPatientInfo();
-    else if (currentStep <= INSTRUMENTS.length) renderInstrument(INSTRUMENTS[currentStep - 1]);
+    else if (currentStep === 1) renderTriage();
+    else if (currentStep <= activeInstruments.length + 1) renderInstrument(activeInstruments[currentStep - 2]);
     else renderReview();
   }
 
@@ -1278,6 +1320,108 @@
       saveState();
       renderStep();
     });
+  }
+
+
+  /* --- Triage / Screening --- */
+  function renderTriage() {
+    var selectedCount = countSelectedInstruments();
+    var html = '<div class="assess-step active"><div class="container-narrow">';
+    html += '<h2>What brings you here today?</h2>';
+    html += '<p class="step-desc">Select any areas of concern. This helps us focus your assessment. You can also choose to take all screenings.</p>';
+
+    // Select All checkbox
+    html += '<div class="question-card" style="background:var(--blue-50,#eff6ff);border:1px solid var(--blue-200,#bfdbfe);">';
+    html += '<label style="display:flex;align-items:center;gap:12px;cursor:pointer;font-weight:600;font-size:1rem;">';
+    html += '<input type="checkbox" id="triage-select-all" style="width:20px;height:20px;accent-color:var(--blue-600,#2563eb);"' + (triageSelectAll ? ' checked' : '') + '>';
+    html += 'Select All Assessments</label>';
+    html += '</div>';
+
+    // Count display
+    html += '<p id="triage-count" style="text-align:center;color:var(--gray-500);font-size:.9rem;margin:12px 0 20px;">' + selectedCount + ' of ' + INSTRUMENTS.length + ' assessments selected</p>';
+
+    // Questions
+    TRIAGE_QUESTIONS.forEach(function (tq, idx) {
+      html += '<div class="question-card" style="padding:14px 20px;">';
+      html += '<label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;">';
+      html += '<input type="checkbox" class="triage-check" data-idx="' + idx + '" style="width:20px;height:20px;min-width:20px;margin-top:2px;accent-color:var(--blue-600,#2563eb);"' + (triageAnswers[idx] || triageSelectAll ? ' checked' : '') + '>';
+      html += '<span style="font-size:.95rem;">' + esc(tq.text) + '</span>';
+      html += '</label></div>';
+    });
+
+    html += '<div class="assess-nav">';
+    html += '<button class="btn btn-secondary" id="btn-back">\u2190 Back</button>';
+    html += '<button class="btn btn-primary" id="btn-next">Next \u2192</button>';
+    html += '</div></div></div>';
+    main.innerHTML = html;
+
+    function updateCount() {
+      var count = countSelectedInstruments();
+      var el = document.getElementById("triage-count");
+      if (el) el.textContent = count + " of " + INSTRUMENTS.length + " assessments selected";
+    }
+
+    document.getElementById("triage-select-all").addEventListener("change", function () {
+      triageSelectAll = this.checked;
+      main.querySelectorAll(".triage-check").forEach(function (cb) { cb.checked = triageSelectAll || triageAnswers[parseInt(cb.dataset.idx)]; });
+      updateCount();
+    });
+
+    main.querySelectorAll(".triage-check").forEach(function (cb) {
+      cb.addEventListener("change", function () {
+        triageAnswers[parseInt(this.dataset.idx)] = this.checked;
+        // If unchecking, also uncheck select all
+        if (!this.checked) {
+          triageSelectAll = false;
+          document.getElementById("triage-select-all").checked = false;
+        }
+        updateCount();
+      });
+    });
+
+    document.getElementById("btn-back").addEventListener("click", function () {
+      currentStep = 0;
+      saveState();
+      renderStep();
+    });
+
+    document.getElementById("btn-next").addEventListener("click", function () {
+      buildActiveInstruments();
+      currentStep = 2;
+      saveState();
+      renderStep();
+    });
+  }
+
+  function countSelectedInstruments() {
+    if (triageSelectAll) return INSTRUMENTS.length;
+    var ids = {};
+    ALWAYS_INCLUDE.forEach(function (id) { ids[id] = true; });
+    TRIAGE_QUESTIONS.forEach(function (tq, idx) {
+      if (triageAnswers[idx]) {
+        tq.instruments.forEach(function (id) { ids[id] = true; });
+      }
+    });
+    // Count how many INSTRUMENTS match
+    var count = 0;
+    INSTRUMENTS.forEach(function (inst) { if (ids[inst.id]) count++; });
+    return count;
+  }
+
+  function buildActiveInstruments() {
+    if (triageSelectAll) {
+      activeInstruments = INSTRUMENTS.slice();
+    } else {
+      var ids = {};
+      ALWAYS_INCLUDE.forEach(function (id) { ids[id] = true; });
+      TRIAGE_QUESTIONS.forEach(function (tq, idx) {
+        if (triageAnswers[idx]) {
+          tq.instruments.forEach(function (id) { ids[id] = true; });
+        }
+      });
+      activeInstruments = INSTRUMENTS.filter(function (inst) { return ids[inst.id]; });
+    }
+    totalSteps = activeInstruments.length + 3; // patient info + triage + instruments + review
   }
 
   /* --- Instrument Renderer --- */
@@ -1463,10 +1607,10 @@
   function renderReview() {
     var html = '<div class="assess-step active"><div class="container-narrow">';
     html += '<h2>Review & Generate Report</h2>';
-    html += '<p class="step-desc">You\u2019ve completed all 23 assessments. Review your information below, then generate your report.</p>';
+    html += '<p class="step-desc">You\u2019ve completed all selected assessments. Review your information below, then generate your report.</p>';
 
     html += '<div style="background:var(--green-50);border:1px solid var(--green-500);border-radius:var(--radius-sm);padding:20px;margin-bottom:24px;">';
-    html += '<strong style="color:var(--green-700);">\u2705 All assessments complete</strong>';
+    html += '<strong style="color:var(--green-700);">\u2705 All ' + activeInstruments.length + ' assessments complete</strong>';
     html += '<p style="color:var(--green-700);font-size:.9rem;margin-top:4px;">Your responses are stored only in this browser tab and will be cleared when you close it.</p>';
     html += '</div>';
 
@@ -1482,7 +1626,7 @@
 
     // Instrument summary
     html += '<h3 style="margin:24px 0 12px;">Completed Assessments</h3>';
-    INSTRUMENTS.forEach(function (inst) {
+    activeInstruments.forEach(function (inst) {
       var result = inst.score.call(inst, answers[inst.id]);
       html += '<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--gray-200);font-size:.9rem;">';
       html += '<span>' + esc(inst.name) + ' \u2014 ' + esc(inst.category) + '</span>';
@@ -1504,13 +1648,13 @@
 
     document.getElementById("btn-generate").addEventListener("click", function () {
       if (typeof window.generateReport === "function") {
-        window.generateReport(patientInfo, answers, INSTRUMENTS);
+        window.generateReport(patientInfo, answers, activeInstruments);
       }
     });
   }
 
   /* Expose for report.js */
-  window._mindprint = { instruments: INSTRUMENTS, getAnswers: function () { return answers; }, getPatientInfo: function () { return patientInfo; } };
+  window._mindprint = { instruments: INSTRUMENTS, activeInstruments: function() { return activeInstruments; }, getAnswers: function () { return answers; }, getPatientInfo: function () { return patientInfo; } };
 
   /* ============================================================
      INIT
