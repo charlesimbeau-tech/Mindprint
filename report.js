@@ -112,6 +112,30 @@
       if (inst.id === "pss10" && result.total >= 27) {
         discussionPoints.push("PSS-10 indicates high perceived stress \u2014 discuss stress management and coping strategies.");
       }
+      if (inst.id === "msibpd" && result.positive) {
+        discussionPoints.push("MSI-BPD screen is positive \u2014 discuss comprehensive personality disorder evaluation.");
+      }
+      if (inst.id === "ocir" && result.positive) {
+        discussionPoints.push("OCI-R score suggests possible OCD \u2014 discuss evaluation and evidence-based treatment (CBT/ERP).");
+      }
+      if (inst.id === "iesr" && result.positive) {
+        discussionPoints.push("IES-R score suggests possible PTSD \u2014 discuss comprehensive trauma evaluation and trauma-focused therapy.");
+      }
+      if (inst.id === "scoff" && result.positive) {
+        discussionPoints.push("SCOFF screen is positive \u2014 discuss evaluation for possible eating disorder.");
+      }
+      if (inst.id === "who5" && result.percentage < 50) {
+        discussionPoints.push("WHO-5 indicates poor well-being (score: " + result.percentage + "%) \u2014 discuss contributing factors and support.");
+      }
+      if (inst.id === "aq10" && result.total >= 6) {
+        discussionPoints.push("AQ-10 score suggests referral for comprehensive autism spectrum assessment.");
+      }
+      if (inst.id === "lsas" && result.total >= 50) {
+        discussionPoints.push("LSAS indicates " + result.severity.toLowerCase() + " \u2014 discuss evaluation and treatment for social anxiety.");
+      }
+      if (inst.id === "desii" && result.averageScore >= 30) {
+        discussionPoints.push("DES-II average score suggests significant dissociation \u2014 discuss comprehensive dissociative disorder evaluation.");
+      }
     });
 
     // If no discussion points, add a generic one
@@ -168,7 +192,38 @@
       html += '<h3>' + esc(r.name) + ' <span style="font-weight:400;color:var(--gray-400);">\u2014 ' + esc(r.category) + '</span></h3>';
       html += '<span class="score-badge">' + esc(r.severity) + '</span>';
       html += '</div>';
-      html += '<div class="score-num">Score: ' + r.total + ' / ' + r.max + '</div>';
+      html += '<div class="score-num">Score: ' + r.total + ' / ' + r.max + (r.percentage !== undefined ? ' (' + r.percentage + '%)' : '') + (r.unit ? ' ' + r.unit : '') + '</div>';
+      // Domain scores (PID-5-BF)
+      if (r.domainScores) {
+        html += '<div class="subscale-scores" style="margin:8px 0;font-size:.85rem;">';
+        Object.keys(r.domainScores).forEach(function (d) {
+          var ds = r.domainScores[d];
+          var flag = ds.avg >= 2 ? ' \u26A0\uFE0F' : '';
+          html += '<div style="display:flex;justify-content:space-between;padding:2px 0;"><span>' + esc(d) + flag + '</span><span>' + ds.avg + ' avg (' + ds.sum + '/15)</span></div>';
+        });
+        html += '</div>';
+      }
+      // Subscale scores (LPFS-BF, CAT-Q, IES-R)
+      if (r.subscaleScores) {
+        html += '<div class="subscale-scores" style="margin:8px 0;font-size:.85rem;">';
+        Object.keys(r.subscaleScores).forEach(function (s) {
+          html += '<div style="display:flex;justify-content:space-between;padding:2px 0;"><span>' + esc(s) + '</span><span>' + r.subscaleScores[s] + '</span></div>';
+        });
+        html += '</div>';
+      }
+      // Dimension scores (CAPE-42)
+      if (r.dimensionScores) {
+        html += '<div class="subscale-scores" style="margin:8px 0;font-size:.85rem;">';
+        Object.keys(r.dimensionScores).forEach(function (dim) {
+          var ds = r.dimensionScores[dim];
+          html += '<div style="display:flex;justify-content:space-between;padding:2px 0;"><span>' + esc(dim) + '</span><span>Freq: ' + ds.frequency + ' | Distress avg: ' + ds.avgDistress + '</span></div>';
+        });
+        html += '</div>';
+      }
+      // LSAS fear/avoidance breakdown
+      if (r.fearTotal !== undefined) {
+        html += '<div style="font-size:.85rem;margin:4px 0;">Fear: ' + r.fearTotal + '/72 | Avoidance: ' + r.avoidTotal + '/72</div>';
+      }
       html += '<div class="interpretation">' + esc(r.interpretation) + '</div>';
       html += '</div>';
     });
