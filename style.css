@@ -82,7 +82,7 @@ body {
   font-size: 1rem; border: none; cursor: pointer; text-decoration: none;
   transition: all .2s;
 }
-.btn-primary { background: var(--blue-600); color: #fff; }
+.btn-primary { background: var(--blue-600); color: #000; font-weight: 700; }
 .btn-primary:hover { background: var(--blue-700); transform: translateY(-1px); box-shadow: var(--shadow-md); }
 .btn-secondary { background: #fff; color: var(--blue-600); border: 2px solid var(--blue-200); }
 .btn-secondary:hover { border-color: var(--blue-400); background: var(--blue-50); }
