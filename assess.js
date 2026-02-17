@@ -1224,6 +1224,12 @@
   var answers = {}; // keyed by instrument id
   var patientInfo = {};
 
+  // Clear state on fresh start
+  if (window.location.search.indexOf("fresh=1") !== -1) {
+    sessionStorage.removeItem("mindprint_state");
+    window.history.replaceState({}, "", "assess.html");
+  }
+
   // Restore from sessionStorage
   try {
     var saved = sessionStorage.getItem("mindprint_state");
