@@ -1,0 +1,298 @@
+/* MindPrint — Mental Health Screening Tool */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --blue-50: #eff6ff;
+  --blue-100: #dbeafe;
+  --blue-200: #bfdbfe;
+  --blue-400: #60a5fa;
+  --blue-500: #3b82f6;
+  --blue-600: #2563eb;
+  --blue-700: #1d4ed8;
+  --green-50: #f0fdf4;
+  --green-100: #dcfce7;
+  --green-500: #22c55e;
+  --green-600: #16a34a;
+  --green-700: #15803d;
+  --teal-50: #f0fdfa;
+  --teal-500: #14b8a6;
+  --teal-600: #0d9488;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  --red-50: #fef2f2;
+  --red-500: #ef4444;
+  --red-600: #dc2626;
+  --red-700: #b91c1c;
+  --orange-50: #fff7ed;
+  --orange-500: #f97316;
+  --orange-600: #ea580c;
+  --yellow-50: #fefce8;
+  --yellow-500: #eab308;
+  --yellow-600: #ca8a04;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+  --shadow: 0 1px 3px rgba(0,0,0,.1), 0 1px 2px rgba(0,0,0,.06);
+  --shadow-md: 0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.06);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,.1), 0 4px 6px rgba(0,0,0,.05);
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: var(--gray-800);
+  background: var(--gray-50);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- Layout ---- */
+.container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+.container-narrow { max-width: 760px; margin: 0 auto; padding: 0 20px; }
+
+/* ---- Nav ---- */
+.nav {
+  background: #fff;
+  border-bottom: 1px solid var(--gray-200);
+  padding: 16px 0;
+  position: sticky; top: 0; z-index: 100;
+}
+.nav .container { display: flex; align-items: center; justify-content: space-between; }
+.nav-brand { font-weight: 700; font-size: 1.25rem; color: var(--blue-600); text-decoration: none; }
+.nav-brand span { color: var(--teal-600); }
+.nav-links { display: flex; gap: 24px; align-items: center; }
+.nav-links a { color: var(--gray-600); text-decoration: none; font-size: .9rem; font-weight: 500; }
+.nav-links a:hover { color: var(--blue-600); }
+
+/* ---- Buttons ---- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 14px 32px; border-radius: var(--radius-sm); font-weight: 600;
+  font-size: 1rem; border: none; cursor: pointer; text-decoration: none;
+  transition: all .2s;
+}
+.btn-primary { background: var(--blue-600); color: #fff; }
+.btn-primary:hover { background: var(--blue-700); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+.btn-secondary { background: #fff; color: var(--blue-600); border: 2px solid var(--blue-200); }
+.btn-secondary:hover { border-color: var(--blue-400); background: var(--blue-50); }
+.btn-success { background: var(--green-600); color: #fff; }
+.btn-success:hover { background: var(--green-700); }
+.btn-danger { background: var(--red-600); color: #fff; }
+.btn-danger:hover { background: var(--red-700); }
+.btn-sm { padding: 10px 20px; font-size: .875rem; }
+.btn-lg { padding: 18px 40px; font-size: 1.1rem; }
+
+/* ---- Hero ---- */
+.hero {
+  background: linear-gradient(135deg, var(--blue-50) 0%, var(--teal-50) 50%, var(--green-50) 100%);
+  padding: 80px 0 60px;
+  text-align: center;
+}
+.hero h1 { font-size: 2.75rem; font-weight: 700; color: var(--gray-900); line-height: 1.2; margin-bottom: 20px; }
+.hero h1 em { font-style: normal; color: var(--blue-600); }
+.hero p.subtitle { font-size: 1.2rem; color: var(--gray-600); max-width: 600px; margin: 0 auto 32px; }
+.hero .cta-group { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+/* ---- Sections ---- */
+.section { padding: 64px 0; }
+.section-alt { background: #fff; }
+.section-title { font-size: 1.75rem; font-weight: 700; text-align: center; margin-bottom: 12px; color: var(--gray-900); }
+.section-subtitle { text-align: center; color: var(--gray-500); margin-bottom: 48px; max-width: 600px; margin-left: auto; margin-right: auto; }
+
+/* ---- Steps ---- */
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 32px; }
+.step { text-align: center; padding: 32px 24px; background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); }
+.step-num {
+  width: 48px; height: 48px; border-radius: 50%; background: var(--blue-100); color: var(--blue-600);
+  display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.2rem; margin-bottom: 16px;
+}
+.step h3 { font-size: 1.1rem; margin-bottom: 8px; }
+.step p { color: var(--gray-500); font-size: .9rem; }
+
+/* ---- Instruments list ---- */
+.instruments-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 16px; }
+.instrument-card {
+  background: #fff; border-radius: var(--radius-sm); padding: 20px; border-left: 4px solid var(--blue-400);
+  box-shadow: var(--shadow-sm);
+}
+.instrument-card h4 { font-size: .95rem; margin-bottom: 4px; }
+.instrument-card p { font-size: .85rem; color: var(--gray-500); }
+
+/* ---- Disclaimer banner ---- */
+.disclaimer-banner {
+  background: var(--yellow-50); border: 1px solid var(--yellow-500); border-radius: var(--radius-sm);
+  padding: 20px 24px; margin: 32px auto; max-width: 800px;
+}
+.disclaimer-banner h4 { color: var(--yellow-600); margin-bottom: 8px; }
+.disclaimer-banner p, .disclaimer-banner li { font-size: .9rem; color: var(--gray-700); }
+.disclaimer-banner ul { padding-left: 20px; }
+
+/* ---- Crisis banner ---- */
+.crisis-banner {
+  background: var(--red-50); border: 2px solid var(--red-500); border-radius: var(--radius-sm);
+  padding: 20px 24px; text-align: center;
+}
+.crisis-banner p { font-size: .95rem; color: var(--red-700); }
+.crisis-banner strong { font-size: 1.1rem; }
+.crisis-banner a { color: var(--red-700); font-weight: 700; }
+
+/* ---- Privacy badge ---- */
+.privacy-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--green-50); border: 1px solid var(--green-500); border-radius: 999px;
+  padding: 8px 20px; font-size: .85rem; color: var(--green-700); font-weight: 500; margin-top: 16px;
+}
+
+/* ---- Footer ---- */
+.footer { padding: 40px 0; text-align: center; color: var(--gray-400); font-size: .85rem; border-top: 1px solid var(--gray-200); }
+.footer a { color: var(--gray-500); }
+
+/* ========== ASSESS PAGE ========== */
+.assess-wrap { min-height: 100vh; display: flex; flex-direction: column; }
+
+/* Progress bar */
+.progress-bar-wrap { background: var(--gray-200); height: 6px; width: 100%; position: sticky; top: 57px; z-index: 90; }
+.progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--blue-500), var(--teal-500)); transition: width .4s ease; border-radius: 0 3px 3px 0; }
+
+/* Step container */
+.assess-step { display: none; padding: 40px 0 80px; flex: 1; }
+.assess-step.active { display: block; }
+.assess-step h2 { font-size: 1.5rem; margin-bottom: 8px; }
+.assess-step .step-desc { color: var(--gray-500); margin-bottom: 32px; }
+
+/* Form fields */
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; font-weight: 500; margin-bottom: 6px; font-size: .9rem; }
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%; padding: 12px 14px; border: 1px solid var(--gray-300); border-radius: var(--radius-sm);
+  font-size: .95rem; font-family: inherit; background: #fff; transition: border-color .2s;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  outline: none; border-color: var(--blue-400); box-shadow: 0 0 0 3px rgba(59,130,246,.15);
+}
+.form-group textarea { resize: vertical; min-height: 80px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* Question cards */
+.question-card {
+  background: #fff; border-radius: var(--radius); padding: 24px; margin-bottom: 16px;
+  box-shadow: var(--shadow-sm); border: 1px solid var(--gray-200);
+}
+.question-card .q-text { font-weight: 500; margin-bottom: 16px; font-size: .95rem; }
+.question-card .q-num { color: var(--gray-400); font-size: .8rem; margin-bottom: 4px; }
+
+/* Radio options */
+.radio-group { display: flex; flex-direction: column; gap: 8px; }
+.radio-option {
+  display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+  border: 1px solid var(--gray-200); border-radius: var(--radius-sm);
+  cursor: pointer; transition: all .15s;
+}
+.radio-option:hover { border-color: var(--blue-300); background: var(--blue-50); }
+.radio-option.selected { border-color: var(--blue-500); background: var(--blue-50); }
+.radio-option input[type="radio"] { accent-color: var(--blue-600); width: 18px; height: 18px; }
+.radio-option label { cursor: pointer; font-size: .9rem; flex: 1; }
+
+/* Yes/No pills */
+.yesno-group { display: flex; gap: 12px; }
+.yesno-btn {
+  flex: 1; padding: 12px; text-align: center; border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm); cursor: pointer; font-weight: 500; transition: all .15s;
+}
+.yesno-btn:hover { border-color: var(--blue-300); }
+.yesno-btn.selected-yes { border-color: var(--blue-500); background: var(--blue-50); color: var(--blue-700); }
+.yesno-btn.selected-no { border-color: var(--gray-400); background: var(--gray-100); color: var(--gray-700); }
+
+/* Navigation */
+.assess-nav {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 20px 0; margin-top: 24px; border-top: 1px solid var(--gray-200);
+}
+.assess-nav .btn { min-width: 140px; }
+
+/* ========== REPORT ========== */
+.report-wrap { background: #fff; min-height: 100vh; }
+.report-header { text-align: center; padding: 40px 0 24px; border-bottom: 2px solid var(--gray-200); margin-bottom: 32px; }
+.report-header h1 { font-size: 1.75rem; color: var(--gray-900); }
+.report-header .report-date { color: var(--gray-400); font-size: .9rem; }
+
+.patient-info-box {
+  background: var(--gray-50); border-radius: var(--radius); padding: 24px; margin-bottom: 32px;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 16px;
+}
+.patient-info-box .info-item label { font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; color: var(--gray-400); display: block; }
+.patient-info-box .info-item span { font-weight: 500; }
+.patient-info-box .info-full { grid-column: 1 / -1; }
+
+/* Score card */
+.score-card {
+  border-radius: var(--radius); padding: 24px; margin-bottom: 20px;
+  border: 1px solid var(--gray-200); position: relative; overflow: hidden;
+}
+.score-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
+}
+.score-card.severity-minimal::before, .score-card.severity-none::before, .score-card.severity-low::before { background: var(--green-500); }
+.score-card.severity-mild::before, .score-card.severity-subthreshold::before { background: var(--yellow-500); }
+.score-card.severity-moderate::before, .score-card.severity-medium::before, .score-card.severity-hazardous::before { background: var(--orange-500); }
+.score-card.severity-severe::before, .score-card.severity-moderately-severe::before, .score-card.severity-harmful::before, .score-card.severity-high::before, .score-card.severity-possible-dependence::before { background: var(--red-500); }
+.score-card.severity-positive::before, .score-card.severity-flag::before { background: var(--red-500); }
+.score-card.severity-negative::before { background: var(--green-500); }
+
+.score-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+.score-card-header h3 { font-size: 1.1rem; }
+.score-badge {
+  display: inline-block; padding: 4px 14px; border-radius: 999px; font-size: .8rem; font-weight: 600;
+}
+.severity-minimal .score-badge, .severity-none .score-badge, .severity-low .score-badge, .severity-negative .score-badge { background: var(--green-100); color: var(--green-700); }
+.severity-mild .score-badge, .severity-subthreshold .score-badge { background: var(--yellow-50); color: var(--yellow-600); }
+.severity-moderate .score-badge, .severity-medium .score-badge, .severity-hazardous .score-badge { background: var(--orange-50); color: var(--orange-600); }
+.severity-severe .score-badge, .severity-moderately-severe .score-badge, .severity-harmful .score-badge, .severity-high .score-badge, .severity-possible-dependence .score-badge { background: var(--red-50); color: var(--red-600); }
+.severity-positive .score-badge, .severity-flag .score-badge { background: var(--red-50); color: var(--red-600); }
+
+.score-card .score-num { font-size: .85rem; color: var(--gray-500); margin-bottom: 8px; }
+.score-card .interpretation { font-size: .9rem; color: var(--gray-600); line-height: 1.5; }
+
+/* Risk flags */
+.risk-flags { background: var(--red-50); border: 2px solid var(--red-500); border-radius: var(--radius); padding: 24px; margin-bottom: 32px; }
+.risk-flags h3 { color: var(--red-700); margin-bottom: 12px; }
+.risk-flags li { color: var(--red-700); font-size: .9rem; margin-bottom: 6px; }
+
+/* Discussion points */
+.discussion-points { background: var(--blue-50); border-radius: var(--radius); padding: 24px; margin-bottom: 32px; }
+.discussion-points h3 { color: var(--blue-700); margin-bottom: 12px; }
+.discussion-points li { font-size: .9rem; color: var(--gray-700); margin-bottom: 6px; }
+
+/* Report actions */
+.report-actions { display: flex; gap: 16px; justify-content: center; padding: 32px 0; flex-wrap: wrap; }
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+  .hero h1 { font-size: 1.75rem; }
+  .hero p.subtitle { font-size: 1rem; }
+  .form-row { grid-template-columns: 1fr; }
+  .patient-info-box { grid-template-columns: 1fr; }
+  .btn-lg { padding: 14px 28px; font-size: 1rem; }
+  .section { padding: 40px 0; }
+  .nav-links { gap: 12px; }
+}
+
+/* ---- Print ---- */
+@media print {
+  .nav, .progress-bar-wrap, .report-actions, .crisis-banner-report, .btn { display: none !important; }
+  body { background: #fff; font-size: 11pt; }
+  .score-card { break-inside: avoid; border: 1px solid #ccc; }
+  .risk-flags { break-inside: avoid; }
+  .report-header { padding-top: 0; }
+}

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MindPrint — Assessment</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="assess-wrap">
+
+<nav class="nav">
+  <div class="container">
+    <a href="index.html" class="nav-brand">Mind<span>Print</span></a>
+    <div class="nav-links">
+      <span id="step-label" style="color:var(--gray-400);font-size:.85rem;"></span>
+    </div>
+  </div>
+</nav>
+
+<div class="progress-bar-wrap">
+  <div class="progress-bar-fill" id="progress-bar" style="width:0%"></div>
+</div>
+
+<main id="assess-main">
+  <!-- Steps are rendered by assess.js -->
+</main>
+
+<!-- Report output (hidden until generated) -->
+<div id="report-output" style="display:none"></div>
+
+<script src="assess.js"></script>
+<script src="report.js"></script>
+</body>
+</html>
